@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FileSystemBP.Core", "src\FileSystemBP.Core\FileSystemBP.Core.xproj", "{6C7425DD-3BA2-4663-A49C-9BC16B148CAA}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FileSystemBP.Core.Tests", "test\FileSystemBP.Core.Tests\FileSystemBP.Core.Tests.xproj", "{2DCA793A-4BFB-4C3D-97FC-5C73D558B058}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{6C7425DD-3BA2-4663-A49C-9BC16B148CAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C7425DD-3BA2-4663-A49C-9BC16B148CAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C7425DD-3BA2-4663-A49C-9BC16B148CAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DCA793A-4BFB-4C3D-97FC-5C73D558B058}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DCA793A-4BFB-4C3D-97FC-5C73D558B058}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DCA793A-4BFB-4C3D-97FC-5C73D558B058}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DCA793A-4BFB-4C3D-97FC-5C73D558B058}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
