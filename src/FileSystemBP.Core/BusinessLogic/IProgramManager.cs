@@ -17,6 +17,6 @@ namespace FileSystemBP.Core.BusinessLogic
         void Update(Programs programToUpdate);
         Programs[] SearchByPredicate(Expression<Func<Programs, bool>> pred);
         Programs[] SearchByFileType(FileType filetype);
-
+        
     }
 }
