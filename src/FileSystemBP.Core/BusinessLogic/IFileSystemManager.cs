@@ -8,8 +8,8 @@ namespace FileSystemBP.Core.BusinessLogic
     {
         File GetFileByPath(string path, User user);
         File GetFileById(int id, User user);
-        File[] SearchByPredicates<T1, T2>(Expression<Func<bool, T1>> filePred1,
-                                              Expression<Func<bool, T2>> filePred2,
+        File[] SearchByPredicates(Expression<Func<File,bool>> filePred1,
+                                              Expression<Func<File, bool>> filePred2,
                                               Access access, FileType fileType,
                                               Programs program, User user);
         void CreateFile(File parent, File file, Programs[] toOpenWith, Access access, FileType ftype, User user);
@@ -18,6 +18,8 @@ namespace FileSystemBP.Core.BusinessLogic
         void ModifyFileOrFolder(File toModify, Access access, FileType ftype, User user);
         string GetPathToFile(File file);
         FileType[] GetAllFileTypes();
+        FileType GetFileType(int fileId, User user);
+        Access GetUserAccess(int fileId, User user);
 
     }
 }

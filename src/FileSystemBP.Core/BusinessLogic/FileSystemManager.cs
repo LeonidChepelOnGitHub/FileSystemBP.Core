@@ -14,7 +14,7 @@ namespace FileSystemBP.Core.BusinessLogic
         {
             using (var context = new FileSystemContext())
             {
-                createFileInternal(context, parent, file, toOpenWith, access, ftype, user);             
+                createFileInternal(context, parent, file, toOpenWith, access, ftype, user);
             }
         }
 
@@ -66,7 +66,7 @@ namespace FileSystemBP.Core.BusinessLogic
                 context.FileSystem.RemoveRange(children);
                 context.File.Remove(file);
                 context.SaveChanges();
-                foreach(var c in children)
+                foreach (var c in children)
                 {
                     DeleteFileOrFolder(c.FileId, user);
                 }
@@ -75,7 +75,7 @@ namespace FileSystemBP.Core.BusinessLogic
 
         public FileType[] GetAllFileTypes()
         {
-            using(var context = new FileSystemContext())
+            using (var context = new FileSystemContext())
             {
                 var filetypes = context.FileType.ToArray();
                 return filetypes;
@@ -97,7 +97,7 @@ namespace FileSystemBP.Core.BusinessLogic
             {
                 var files = path.Split('/');
                 var root = context.File.FirstOrDefault(f => f.Name == "/");
-                for(int i = 1; i < files.Length; i++)
+                for (int i = 1; i < files.Length; i++)
                 {
                     if (root == null)
                     {
@@ -115,25 +115,160 @@ namespace FileSystemBP.Core.BusinessLogic
 
 
                     root = currentFile;
-                    
+
                 }
                 return root;
             }
         }
 
+        public FileType GetFileType(int fileId, User user)
+        {
+            using (var context = new FileSystemContext())
+            {
+                var ftypeId = context
+                                .ProgramFileTypeFile
+                                .FirstOrDefault(f => f.File == fileId)
+                                .FileType;
+                var ft = context.FileType.FirstOrDefault(f => f.Id == ftypeId);
+                return ft;
+            }
+        }
+
         public string GetPathToFile(File file)
         {
-            throw new NotImplementedException();
+            using (var context = new FileSystemContext())
+            {
+                if (file.Name == "/") return "/";
+                var f = file;
+                var path = "";
+                var parent = new FileSystem();
+                do
+                {
+                    path = "/" + f.Name + path;
+
+                    parent = context
+                                    .FileSystem
+                                    .FirstOrDefault(fs => fs.FileId == f.Id);
+                    if (parent != null)
+                    {
+                        f = context.File.FirstOrDefault(fl => fl.Id == parent.ParentId);
+                    }
+
+                } while (parent != null);
+                return path.Substring(2);
+            }
+        }
+
+        public Access GetUserAccess(int fileId, User user)
+        {
+            using (var context = new FileSystemContext())
+            {
+                var aid = context
+                              .FileUserRights
+                              .FirstOrDefault(f => f.File == fileId)
+                              .Rights;
+                var access = context.Access.FirstOrDefault(f => f.Id == aid);
+                return access;
+            }
         }
 
         public void ModifyFileOrFolder(File toModify, Access access, FileType ftype, User user)
         {
-            throw new NotImplementedException();
+            using (var context = new FileSystemContext())
+            {
+
+                if (ftype != null)
+                {
+                    var ftid = context.FileType.FirstOrDefault(ft => ft.Type == ftype.Type);
+                    if (ftid == null)
+                    {
+                        ftid = ftype;
+                        context.FileType.Add(ftid);
+                        context.SaveChanges();
+                    }
+                    var ftypes = context
+                                    .ProgramFileTypeFile
+                                    .Where(t => t.File == toModify.Id).ToArray();
+                    foreach (var t in ftypes)
+                    {
+                        context.ProgramFileTypeFile.Remove(t);
+                        context.SaveChanges();
+                        t.FileType = ftid.Id;
+                        context.ProgramFileTypeFile.Add(t);
+                        context.SaveChanges();
+                    }
+                }
+
+                if (user != null && access != null)
+                {
+                    var aid = context.Access
+                                    .FirstOrDefault(t => t.Delete == access.Delete
+                                                    && t.Create == access.Create
+                                                    && t.Read == access.Read
+                                                    && t.Write == access.Write);
+                    if (aid == null)
+                    {
+                        aid = access;
+                        context.Access.Add(aid);
+                        context.SaveChanges();
+                    }
+                    var fur = context
+                                  .FileUserRights
+                                  .FirstOrDefault(t => t.File == toModify.Id
+                                                        && t.User == user.Id);
+                    context.FileUserRights.Remove(fur);
+                    context.SaveChanges();
+                    fur.Rights = aid.Id;
+                    context.FileUserRights.Add(fur);
+                    context.SaveChanges();
+                }
+
+                context.File.Update(toModify);
+                context.SaveChanges();
+
+
+
+            }
+
         }
 
-        public File[] SearchByPredicates<T1, T2>(Expression<Func<bool, T1>> filePred1, Expression<Func<bool, T2>> filePred2, Access access, FileType fileType, Programs program, User user)
+        public File[] SearchByPredicates(Expression<Func<File, bool>> filePred1, Expression<Func<File, bool>> filePred2, Access access, FileType fileType, Programs program, User user)
         {
-            throw new NotImplementedException();
+            using (var context = new FileSystemContext())
+            {
+                var fur = context.FileUserRights.AsQueryable();
+                if (user != null)
+                {
+                    fur = fur.Where(t => t.User == user.Id);
+                }
+                if (access != null)
+                {
+                    fur = fur.Where(t => t.Rights == access.Id);
+                }
+                var pftf = context.ProgramFileTypeFile.AsQueryable();
+                if (fileType != null)
+                {
+                    pftf = pftf.Where(t => t.FileType == fileType.Id);
+                }
+                if (program != null)
+                {
+                    pftf = pftf.Where(t => t.Program == program.Id);
+                }
+                var join = fur.Join(pftf, t1 => t1.File, t2 => t2.File, (t1, t2) => t1.File);
+                var files = context.File.AsQueryable();
+                var finalJoin = join.Join(files, t1 => t1, t2 => t2.Id, (t1, t2) => t2);
+
+                if (filePred1 != null)
+                {
+                    finalJoin = finalJoin.Where(filePred1);
+                }
+                if (filePred2 != null)
+                {
+                    finalJoin = finalJoin.Where(filePred2);
+                }
+
+                return finalJoin.ToArray();
+            }
         }
 
 
@@ -161,11 +296,13 @@ namespace FileSystemBP.Core.BusinessLogic
                                                             && a.Write == access.Write
                                                             && a.Create == access.Create
                                                             && a.Delete == access.Delete);
-            if (access == null)
+            if (accessFile == null)
             {
                 context.Access.Add(access);
-                accessFile = access;
                 context.SaveChanges();
+            }else
+            {
+                access.Id = accessFile.Id;
             }
 
             //file type block -------------------------------
@@ -196,7 +333,7 @@ namespace FileSystemBP.Core.BusinessLogic
                     });
                 context.SaveChanges();
             }
-           
+
         }
     }
 }
