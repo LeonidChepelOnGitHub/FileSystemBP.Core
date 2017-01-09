@@ -13,7 +13,7 @@ namespace FileSystemBP.Core.BusinessLogic
         void Add(User user);
         void Delete(int id);
         void Update(User userToUpdate);
-        User[] SearchByPredicates<T1, T2>(Expression<Func<bool, T1>> pred1, Expression<Func<bool, T2>> pred2);
+        User[] SearchByPredicates(Expression<Func<User, bool>> pred1, Expression<Func<User, bool>> pred2);
 
     }
 }
