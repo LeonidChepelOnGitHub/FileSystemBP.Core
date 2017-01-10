@@ -152,7 +152,7 @@
         var parentElem = parentSelector ?
           angular.element($document[0].querySelector('.modal-demo ' + parentSelector)) : undefined;
         var modalInstance = $uibModal.open({
-            animation: fs.animationsEnabled,
+            animation: true,
             ariaLabelledBy: 'modal-title',
             ariaDescribedBy: 'modal-body',
             templateUrl: 'CreateFile.html',

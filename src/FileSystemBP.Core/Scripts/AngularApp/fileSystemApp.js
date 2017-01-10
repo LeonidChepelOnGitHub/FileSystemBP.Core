@@ -1,1 +1,1 @@
-﻿angular.module('fileSystemApp', ['ngCookies', 'ui.bootstrap']);
+﻿angular.module('fileSystemApp', ['ngCookies', 'ngAnimate', 'ui.bootstrap']);
