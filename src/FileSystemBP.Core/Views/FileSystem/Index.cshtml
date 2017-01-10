@@ -1,12 +1,111 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
-<ol>
-    @for (int i = 0; i < 10; i++)
-    {
-        <li>
-            hello!
-        </li>
-    }
-</ol>
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>FileSystem Observer</title>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="~/Scripts/angular-cookies.js"></script>
+    <script src="~/Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
+    <script src="~/Scripts/AngularApp/fileSystemApp.js"></script>
+    <script src="~/Scripts/AngularApp/cookieService.js"></script>
+    <script src="~/Scripts/AngularApp/fileSystemService.js"></script>
+    <script src="~/Scripts/AngularApp/fileSystemController.js"></script>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/Styles.css" />
+    <link rel="stylesheet" href="~/Content/Loader.css" />
+</head>
+<body ng-app="fileSystemApp">
+    <div class="container" ng-controller="fileSystemController as fs">
 
+        <script type="text/ng-template" id="CreateFile.html">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Create new file</h3>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <ul>
+                    <li ng-repeat="item in $ctrl.items">
+                        <a href="#" ng-click="$event.preventDefault(); $ctrl.selected.item = item">{{ item }}</a>
+                    </li>
+                </ul>
+                Selected: <b>{{ $ctrl.selected.item }}</b>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">Create</button>
+                <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
+            </div>
+        </script>
+       
+
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Less 10Mb</th>
+                        <th>10Mb-50Mb</th>
+                        <th>More 100Mb</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div ng-show='fs.currentPath==""'>
+                                Please select drive
+                            </div>
+                            <div ng-show='fs.currentPath!=""'>
+                                <div ng-show="fs.loadingCount">
+                                    <div class="loader">Loading...</div>
+                                </div>
+                                <div ng-show="!fs.loadingCount">{{fs.lessFiles}}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div ng-show='fs.currentPath==""'>
+                                Please select drive
+                            </div>
+                            <div ng-show='fs.currentPath!=""'>
+                                <div ng-show="fs.loadingCount">
+                                    <div class="loader">Loading...</div>
+                                </div>
+                                <div ng-show="!fs.loadingCount">
+                                    {{fs.middleFiles}}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div ng-show='fs.currentPath==""'>
+                                Please select drive
+                            </div>
+                            <div ng-show='fs.currentPath!=""'>
+                                <div ng-show="fs.loadingCount">
+                                    <div class="loader">Loading...</div>
+                                </div>
+                                <div ng-show="!fs.loadingCount">
+                                    {{fs.bigFiles}}
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <button type="button" class="btn btn-default" ng-click="fs.open()">Create File</button>
+            <div class="title">
+                Current path:
+            </div>
+            <div class="path">
+                {{fs.currentPath}}
+            </div>
+        </div>
+        <div ng-show="fs.error" class="row error">You have no access to read this directory</div>
+        <div class="row  square-border">
+            <div ng-show="fs.loadingDirectory">
+                <div class="loader">Loading...</div>
+            </div>
+            <ol ng-show="!fs.loadingDirectory">
+                <li><a href="" ng-click="fs.getDirectoryContents(fs.prevDirectory)">..</a></li>
+                <li ng-repeat="file in fs.files"><a href="" ng-click="fs.getDirectoryContents(file.path)">{{file.name}}</a></li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

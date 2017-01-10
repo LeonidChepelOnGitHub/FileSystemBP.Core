@@ -20,6 +20,7 @@ namespace FileSystemBP.Core.BusinessLogic
         FileType[] GetAllFileTypes();
         FileType GetFileType(int fileId, User user);
         Access GetUserAccess(int fileId, User user);
+        File[] GetAll();
 
     }
 }

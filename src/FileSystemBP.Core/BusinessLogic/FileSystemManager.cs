@@ -73,6 +73,11 @@ namespace FileSystemBP.Core.BusinessLogic
             }
         }
 
+        public File[] GetAll()
+        {
+            return SearchByPredicates(null, null, null, null, null, null);
+        }
+
         public FileType[] GetAllFileTypes()
         {
             using (var context = new FileSystemContext())

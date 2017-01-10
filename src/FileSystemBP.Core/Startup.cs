@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using FileSystemBP.Core.Models;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace FileSystemBP.Core
 {
@@ -39,7 +41,19 @@ namespace FileSystemBP.Core
          
             app.UseMvcWithDefaultRoute();
 
-
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+            Path.Combine(Directory.GetCurrentDirectory(), @"Scripts")),
+                RequestPath = new PathString("/Scripts")
+            });
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+            Path.Combine(Directory.GetCurrentDirectory(), @"Content")),
+                RequestPath = new PathString("/Content")
+            });
 
             app.Run(async (context) =>
             {
